@@ -4,11 +4,11 @@ const Task = ({ task, onToggleComplete, onDelete }) => {
       <div className="flex items-center">
         <input
           type="checkbox"
-          checked={task.status}
+          checked={task.completed}
           onChange={() => onToggleComplete(task.id)}
           className="mr-2"
         />
-        <span className={task.status ? 'line-through text-gray-500' : ''}>{task.title}</span>
+        <span className={task.completed ? 'line-through text-gray-500' : ''}>{task.title}</span>
       </div>
       <button
         onClick={() => onDelete(task.id)}
