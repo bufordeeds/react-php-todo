@@ -1,0 +1,22 @@
+{
+  "semi": true,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "printWidth": 100,
+  "trailingComma": "es5",
+  "overrides": [
+    {
+      "files": "*.php",
+      "options": {
+        "phpVersion": "7.4",
+        "trailingCommaPHP": true
+      }
+    },
+    {
+      "files": "*.jsx",
+      "options": {
+        "jsxSingleQuote": false
+      }
+    }
+  ]
+}

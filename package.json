@@ -1,0 +1,22 @@
+{
+  "name": "react-php-todo",
+  "version": "1.0.0",
+  "description": "A todo app with React frontend and PHP backend",
+  "main": "index.js",
+  "scripts": {
+  "test": "echo \"Error: no test specified\" && exit 1",
+  "prettier": "prettier --write \"server/**/*.php\" \"client/src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
+  "prettier:check": "prettier --check \"server/**/*.php\" \"client/src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\""
+},
+  "keywords": [
+    "react",
+    "php",
+    "todo"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@prettier/plugin-php": "^0.22.2",
+    "prettier": "^3.3.3"
+  }
+}
