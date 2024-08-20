@@ -4,17 +4,25 @@
   "tabWidth": 2,
   "printWidth": 100,
   "trailingComma": "es5",
+  "plugins": ["@prettier/plugin-php"],
   "overrides": [
     {
-      "files": "*.php",
+      "files": "server/**/*.php",
       "options": {
-        "phpVersion": "7.4",
-        "trailingCommaPHP": true
+        "parser": "php",
+        "tabWidth": 4,
+        "phpVersion": "7.4"
       }
     },
     {
-      "files": "*.jsx",
+      "files": [
+        "client/src/**/*.js",
+        "client/src/**/*.jsx",
+        "client/src/**/*.ts",
+        "client/src/**/*.tsx"
+      ],
       "options": {
+        "parser": "babel",
         "jsxSingleQuote": false
       }
     }
