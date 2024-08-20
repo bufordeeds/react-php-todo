@@ -46,7 +46,7 @@ function handleApiError($e)
 // API route handlers
 function getAllTasks($pdo)
 {
-    $stmt = $pdo->query('SELECT * FROM tasks ORDER BY id DESC');
+    $stmt = $pdo->query('SELECT * FROM tasks ORDER BY id ASC');
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
