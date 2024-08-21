@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Task from './Task';
 import TaskForm from './TaskForm';
+import { toast } from 'react-toastify';
 
 const API_URL = 'http://localhost/api.php';
 
@@ -10,10 +11,10 @@ const TaskList = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    getTasks();
+    fetchTasks();
   }, []);
 
-  const getTasks = async () => {
+  const fetchTasks = async () => {
     setIsLoading(true);
     try {
       const response = await fetch(API_URL);
@@ -24,6 +25,7 @@ const TaskList = () => {
       setTasks(data);
     } catch (err) {
       setError(err.message);
+      toast.error('Failed to fetch tasks');
     } finally {
       setIsLoading(false);
     }
@@ -41,10 +43,11 @@ const TaskList = () => {
       if (!response.ok) {
         throw new Error('Failed to add task');
       }
-      const newTask = await response.json();
-      setTasks([...tasks, newTask]);
+      const data = await response.json();
+      setTasks((prevTasks) => [data.task, ...prevTasks]);
+      toast.success(data.message);
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     }
   };
 
@@ -61,10 +64,11 @@ const TaskList = () => {
       if (!response.ok) {
         throw new Error('Failed to update task');
       }
-      const updatedTask = await response.json();
-      setTasks(tasks.map((t) => (t.id === id ? updatedTask : t)));
+      const data = await response.json();
+      setTasks((prevTasks) => prevTasks.map((t) => (t.id === id ? data.task : t)));
+      toast.success(data.message);
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     }
   };
 
@@ -76,9 +80,11 @@ const TaskList = () => {
       if (!response.ok) {
         throw new Error('Failed to delete task');
       }
-      setTasks(tasks.filter((task) => task.id !== id));
+      const data = await response.json();
+      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+      toast.success(data.message);
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     }
   };
 

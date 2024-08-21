@@ -1,47 +1,11 @@
 <?php
+session_start();
 ini_set('display_errors', 0);
 ini_set('log_errors', 1);
 ini_set('error_log', 'php_errors.log');
 
 require_once 'db_connection.php';
-
-// CORS handling
-function handleCors()
-{
-    if (isset($_SERVER['HTTP_ORIGIN'])) {
-        header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
-        header('Access-Control-Allow-Credentials: true');
-        header('Access-Control-Max-Age: 86400');
-    }
-
-    if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-        if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'])) {
-            header('Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE');
-        }
-        if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
-            header(
-                "Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}",
-            );
-        }
-        exit(0);
-    }
-}
-
-// API response function
-function sendJsonResponse($data, $statusCode = 200)
-{
-    http_response_code($statusCode);
-    header('Content-Type: application/json');
-    echo json_encode($data);
-    exit();
-}
-
-// API error handler
-function handleApiError($e)
-{
-    $statusCode = $e instanceof PDOException ? 500 : 400;
-    sendJsonResponse(['error' => $e->getMessage()], $statusCode);
-}
+require_once 'api_config.php';
 
 // API route handlers
 function getAllTasks($pdo)
@@ -50,11 +14,13 @@ function getAllTasks($pdo)
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function createTask($pdo, $data)
+function createTask($pdo, $data, $user_id)
 {
     if (!isset($data->title) || trim($data->title) === '') {
         throw new Exception('Title is required');
     }
+    echo $_SESSION;
+    print_r($_SESSION);
     $completed = isset($data->completed) ? ($data->completed ? 1 : 0) : 0;
     $stmt = $pdo->prepare('INSERT INTO tasks (title, completed) VALUES (?, ?)');
     $stmt->execute([$data->title, $completed]);
@@ -90,6 +56,16 @@ function deleteTask($pdo, $id)
     return ['message' => 'Task deleted successfully'];
 }
 
+function saveTasks($tasks)
+{
+    $json = json_encode($tasks, JSON_PRETTY_PRINT);
+    $file = 'tasks.json';
+    if (file_put_contents($file, $json)) {
+        return true;
+    }
+    return false;
+}
+
 // Main execution
 try {
     handleCors();
@@ -99,19 +75,55 @@ try {
 
     switch ($method) {
         case 'GET':
-            sendJsonResponse(getAllTasks($pdo));
+            $tasks = getAllTasks($pdo);
+            saveTasks($tasks); // Save tasks to JSON file
+            sendJsonResponse($tasks);
             break;
         case 'POST':
-            sendJsonResponse(createTask($pdo, $data));
+            $newTask = createTask($pdo, $data);
+            $tasks = getAllTasks($pdo);
+            if (saveTasks($tasks)) {
+                sendJsonResponse([
+                    'message' => 'Task added successfully and data saved to JSON file',
+                    'task' => $newTask,
+                ]);
+            } else {
+                sendJsonResponse([
+                    'message' => 'Task added successfully but failed to save to JSON file',
+                    'task' => $newTask,
+                ]);
+            }
             break;
         case 'PUT':
-            sendJsonResponse(updateTask($pdo, $data));
+            $updatedTask = updateTask($pdo, $data);
+            $tasks = getAllTasks($pdo);
+            if (saveTasks($tasks)) {
+                sendJsonResponse([
+                    'message' => 'Task updated successfully and data saved to JSON file',
+                    'task' => $updatedTask,
+                ]);
+            } else {
+                sendJsonResponse([
+                    'message' => 'Task updated successfully but failed to save to JSON file',
+                    'task' => $updatedTask,
+                ]);
+            }
             break;
         case 'DELETE':
             if (!isset($_GET['id'])) {
                 throw new Exception('ID is required');
             }
-            sendJsonResponse(deleteTask($pdo, $_GET['id']));
+            deleteTask($pdo, $_GET['id']);
+            $tasks = getAllTasks($pdo);
+            if (saveTasks($tasks)) {
+                sendJsonResponse([
+                    'message' => 'Task deleted successfully and data saved to JSON file',
+                ]);
+            } else {
+                sendJsonResponse([
+                    'message' => 'Task deleted successfully but failed to save to JSON file',
+                ]);
+            }
             break;
         default:
             throw new Exception('Method not allowed');
