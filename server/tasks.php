@@ -1,31 +1,31 @@
 <?php
-session_start();
 ini_set('display_errors', 0);
 ini_set('log_errors', 1);
 ini_set('error_log', 'php_errors.log');
 
 require_once 'db_connection.php';
 require_once 'api_config.php';
+require_once 'session.php';
+startSession();
 
 // API route handlers
 function getAllTasks($pdo)
 {
+    var_dump($_SESSION);
     $stmt = $pdo->query('SELECT * FROM tasks ORDER BY id ASC');
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function createTask($pdo, $data, $user_id)
+function createTask($pdo, $data)
 {
+    print_r($_SESSION);
     if (!isset($data->title) || trim($data->title) === '') {
         throw new Exception('Title is required');
     }
-    echo $_SESSION;
-    print_r($_SESSION);
     $completed = isset($data->completed) ? ($data->completed ? 1 : 0) : 0;
     $stmt = $pdo->prepare('INSERT INTO tasks (title, completed) VALUES (?, ?)');
     $stmt->execute([$data->title, $completed]);
     $taskId = $pdo->lastInsertId();
-
     $stmt = $pdo->prepare('SELECT * FROM tasks WHERE id = ?');
     $stmt->execute([$taskId]);
     return $stmt->fetch(PDO::FETCH_ASSOC);

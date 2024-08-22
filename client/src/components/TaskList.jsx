@@ -3,7 +3,7 @@ import Task from './Task';
 import TaskForm from './TaskForm';
 import { toast } from 'react-toastify';
 
-const API_URL = 'http://localhost/api.php';
+const API_URL = 'http://localhost/tasks.php';
 
 const TaskList = () => {
   const [tasks, setTasks] = useState([]);

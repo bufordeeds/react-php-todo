@@ -33,7 +33,7 @@ react-php-todo/
 │   ├── index.html
 │   └── package.json
 └── server/             # PHP backend
-    ├── api.php
+    ├── tasks.php
     └── db_connection.php
 ```
 
@@ -93,7 +93,7 @@ react-php-todo/
 
 6. Access the application:
    - The React app will be running at the URL provided by Vite (usually `http://localhost:5173`)
-   - The API should be accessible at `http://localhost/path-to-your-server-directory/api.php`
+   - The API should be accessible at `http://localhost/path-to-your-server-directory/tasks.php`
 
 ### Note
 
@@ -101,10 +101,10 @@ Make sure your web server and MySQL server are running before starting the appli
 
 ## API Endpoints
 
-- GET `/api.php`: Fetch all tasks
-- POST `/api.php`: Create a new task
-- PUT `/api.php`: Update an existing task
-- DELETE `/api.php?id={taskId}`: Delete a task
+- GET `/tasks.php`: Fetch all tasks
+- POST `/tasks.php`: Create a new task
+- PUT `/tasks.php`: Update an existing task
+- DELETE `/tasks.php?id={taskId}`: Delete a task
 
 ## Future Improvements
 
